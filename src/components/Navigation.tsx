@@ -13,7 +13,7 @@ const Navigation = () => {
   
   const navItems = [
     { name: 'MENU', href: '/menu' },
-    { name: 'ORDER ONLINE', href: '/events' },
+    { name: 'ORDER ONLINE', href: 'https://order.toasttab.com/online/anitas-cafe-llc-620-caroline-st' },
     { name: 'TEAM', href: '/team' },
   ];
 
@@ -94,7 +94,8 @@ const Navigation = () => {
               {navItems.map((item) => (
                 item.href.startsWith('#') ? (
                   <button
-                    key={item.name}
+                 
+                    rel="noopener noreferrer"
                     onClick={() => handleNavClick(item.href)}
                     className={`font-serif text-xs tracking-[0.15em] font-normal transition-colors duration-200 bg-transparent border-none cursor-pointer ${textColorClass} ${hoverColorClass}`}
                   >
@@ -104,6 +105,8 @@ const Navigation = () => {
                   <Link
                     key={item.name}
                     to={item.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className={`font-serif text-xs tracking-[0.15em] font-normal transition-colors duration-200 ${textColorClass} ${hoverColorClass}`}
                   >
                     {item.name}
