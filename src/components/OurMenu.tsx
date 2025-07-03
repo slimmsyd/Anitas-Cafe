@@ -32,7 +32,7 @@ const menuItems: MenuItem[] = [
     title: 'Abstract Croissant',
     description: 'A flaky croissant with a colorful glaze, inspired by modern art. Where taste meets imagination.',
     mediaType: 'image',
-    src: 'https://source.unsplash.com/400x600/?croissant,art',
+    src: '/Crossaint_Things.jpeg',
     tag: 'New',
   },
   {
