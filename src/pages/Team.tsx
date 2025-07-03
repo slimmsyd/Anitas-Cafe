@@ -23,7 +23,7 @@ const teamMembers: TeamMember[] = [
     specialty: 'Brazilian single-origin brewing techniques'
   },
   {
-    name: 'Marcus Chen',
+    name: 'PlaceHolder',
     title: 'Gallery Coordinator & Visual Artist',
     year: '2020',
     image: '/TeamPhotos/Team_Member_2.jpg',
@@ -31,42 +31,7 @@ const teamMembers: TeamMember[] = [
     background: 'A graduate of VCU Arts, Marcus brings his background in curation and contemporary art to create rotating exhibitions that complement our coffee culture.',
     specialty: 'Contemporary mixed media and community art installations'
   },
-  {
-    name: 'Elena Rosario',
-    title: 'Pastry Artist & Culinary Designer',
-    year: '2021',
-    image: 'https://source.unsplash.com/400x500/?portrait,woman,baker',
-    philosophy: 'Every pastry is a small sculpture, every flavor a brushstroke. I believe in creating edible art that nourishes both body and spirit, inspired by the seasons and the artists around us.',
-    background: 'Trained at the Culinary Institute, Elena specializes in plant-based pastries that mirror artistic movements—from Impressionist tarts to Abstract Expressionist breads.',
-    specialty: 'Plant-based pastries and seasonal flavor artistry'
-  },
-  {
-    name: 'James Foster',
-    title: 'Community Events Curator',
-    year: '2022',
-    image: 'https://source.unsplash.com/400x500/?portrait,man,creative',
-    philosophy: 'True community forms when strangers become friends over shared experiences. I orchestrate gatherings where coffee, art, and conversation create lasting connections.',
-    background: 'With a background in cultural anthropology and event design, James creates intimate gatherings that celebrate both local artists and coffee traditions.',
-    specialty: 'Intimate artist talks and coffee cuppings'
-  },
-  {
-    name: 'Amara Okafor',
-    title: 'Sustainability Coordinator',
-    year: '2023',
-    image: 'https://source.unsplash.com/400x500/?portrait,woman,sustainable',
-    philosophy: 'Sustainability is an art form—the careful balance of respect for our earth, fair compensation for growers, and mindful consumption. Every choice we make ripples outward.',
-    background: 'An environmental science graduate, Amara ensures our coffee sourcing supports farming communities while implementing eco-conscious practices throughout our operations.',
-    specialty: 'Direct trade relationships and zero-waste initiatives'
-  },
-  {
-    name: 'David Kim',
-    title: 'Master Roaster',
-    year: '2024',
-    image: 'https://source.unsplash.com/400x500/?portrait,man,coffee',
-    philosophy: 'Roasting is alchemy—the transformation of green seeds into aromatic poetry. Each roast profile is a composition, each batch a unique performance.',
-    background: 'After fifteen years in specialty coffee, David joined us to develop our signature roast profiles that complement both the artistic atmosphere and Brazilian heritage.',
-    specialty: 'Small-batch roasting and flavor profile development'
-  }
+
 ];
 
 const Team = () => {
