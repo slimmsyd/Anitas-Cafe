@@ -101,12 +101,12 @@ const Footer = () => {
                   >
                     View Our Menu
                   </a>
-                  <a 
+                  {/* <a 
                     href="/events" 
                     className="block font-serif text-neutral-100 hover:text-neutral-300 border-b border-neutral-600 hover:border-neutral-400 transition-all duration-300 pb-1 tracking-wide"
                   >
                     Current Events
-                  </a>
+                  </a> */}
                   <a 
                     href="/team" 
                     className="block font-serif text-neutral-100 hover:text-neutral-300 border-b border-neutral-600 hover:border-neutral-400 transition-all duration-300 pb-1 tracking-wide"
@@ -139,12 +139,12 @@ const Footer = () => {
                   </div>
                   
                   <div className="space-y-2">
-                    <button 
+                    {/* <button 
                       onClick={handleOpenBookEvent}
                       className="block font-serif text-neutral-400 hover:text-neutral-100 transition-colors duration-300 text-sm text-left border-b border-neutral-600 hover:border-neutral-400 pb-1"
                     >
                       Event Inquiries
-                    </button>
+                    </button> */}
                   </div>
                 </div>
               </div>

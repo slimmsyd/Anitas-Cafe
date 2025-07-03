@@ -17,7 +17,7 @@ const teamMembers: TeamMember[] = [
     name: 'Sofia Mendes',
     title: 'Head Barista & Coffee Curator',
     year: '2019',
-    image: 'https://source.unsplash.com/400x500/?portrait,woman,coffee',
+    image: '/TeamPhotos/Team_Member_1.jpeg',
     philosophy: 'Coffee is not just a beverage; it is a meditation in motion. Each cup tells the story of its origin, and through careful preparation, we honor both the bean and the drinker.',
     background: 'Born in São Paulo, Sofia discovered her passion for coffee during childhood visits to her grandmother\'s fazenda. She studied agricultural science before pursuing her calling as a coffee artisan.',
     specialty: 'Brazilian single-origin brewing techniques'
@@ -26,7 +26,7 @@ const teamMembers: TeamMember[] = [
     name: 'Marcus Chen',
     title: 'Gallery Coordinator & Visual Artist',
     year: '2020',
-    image: 'https://source.unsplash.com/400x500/?portrait,man,artist',
+    image: '/TeamPhotos/Team_Member_2.jpg',
     philosophy: 'Art and coffee share the same essence—they transform raw materials into experiences that touch the soul. In our space, every corner becomes a canvas for community connection.',
     background: 'A graduate of VCU Arts, Marcus brings his background in curation and contemporary art to create rotating exhibitions that complement our coffee culture.',
     specialty: 'Contemporary mixed media and community art installations'

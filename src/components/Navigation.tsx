@@ -12,8 +12,8 @@ const Navigation = () => {
   const darkTextRoutes = ['/team', '/menu', '/events'];
   
   const navItems = [
-    { name: 'MENU', href: '/menu' },
     { name: 'ORDER ONLINE', href: 'https://order.toasttab.com/online/anitas-cafe-llc-620-caroline-st' },
+    { name: 'MENU', href: '/menu' },
     { name: 'TEAM', href: '/team' },
   ];
 
@@ -105,8 +105,7 @@ const Navigation = () => {
                   <Link
                     key={item.name}
                     to={item.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                    {...(item.name === 'ORDER ONLINE' && { target: '_blank', rel: 'noopener noreferrer' })}
                     className={`font-serif text-xs tracking-[0.15em] font-normal transition-colors duration-200 ${textColorClass} ${hoverColorClass}`}
                   >
                     {item.name}
@@ -159,6 +158,7 @@ const Navigation = () => {
                     <Link
                       key={item.name}
                       to={item.href}
+                      {...(item.name === 'ORDER ONLINE' && { target: '_blank', rel: 'noopener noreferrer' })}
                       onClick={() => setIsMobileMenuOpen(false)}
                       className="block font-serif text-base tracking-[0.15em] font-normal text-neutral-900 hover:text-neutral-600 transition-colors duration-200 py-2"
                     >
