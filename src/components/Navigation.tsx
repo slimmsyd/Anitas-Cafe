@@ -15,7 +15,6 @@ const Navigation = () => {
     { name: 'MENU', href: '/menu' },
     { name: 'ORDER ONLINE', href: '/events' },
     { name: 'TEAM', href: '/team' },
-    { name: 'NEWS', href: '#news' },
   ];
 
   useEffect(() => {
