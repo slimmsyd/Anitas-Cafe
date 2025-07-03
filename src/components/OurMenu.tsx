@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 
 interface MenuItem {
@@ -54,14 +54,21 @@ function getCardsToShow(width: number) {
 function OurMenu() {
   const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1024);
   const [startIdx, setStartIdx] = useState(0);
+  const [currentMobileIdx, setCurrentMobileIdx] = useState(0);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const isMobile = windowWidth < 640;
 
   // Responsive cards to show
   const CARDS_TO_SHOW = getCardsToShow(windowWidth);
   const canGoBack = startIdx > 0;
   const canGoForward = startIdx + CARDS_TO_SHOW < menuItems.length;
 
+  // Touch handling for mobile slider
+  const [touchStart, setTouchStart] = useState(0);
+  const [touchEnd, setTouchEnd] = useState(0);
+
   // Update window width on resize
-  React.useEffect(() => {
+  useEffect(() => {
     function handleResize() {
       setWindowWidth(window.innerWidth);
     }
@@ -70,18 +77,75 @@ function OurMenu() {
   }, []);
 
   // Reset startIdx if cards to show changes
-  React.useEffect(() => {
+  useEffect(() => {
     if (startIdx + CARDS_TO_SHOW > menuItems.length) {
       setStartIdx(Math.max(0, menuItems.length - CARDS_TO_SHOW));
     }
   }, [CARDS_TO_SHOW, startIdx]);
 
+  // Handle mobile scroll and update current index
+  useEffect(() => {
+    if (!isMobile || !scrollContainerRef.current) return;
+
+    const handleScroll = () => {
+      const container = scrollContainerRef.current;
+      if (!container) return;
+
+      const scrollLeft = container.scrollLeft;
+      const itemWidth = container.offsetWidth;
+      const newIndex = Math.round(scrollLeft / itemWidth);
+      setCurrentMobileIdx(Math.min(newIndex, menuItems.length - 1));
+    };
+
+    const container = scrollContainerRef.current;
+    container.addEventListener('scroll', handleScroll);
+    return () => container.removeEventListener('scroll', handleScroll);
+  }, [isMobile]);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchEnd(0); // Reset touchEnd
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > 50;
+    const isRightSwipe = distance < -50;
+
+    if (isLeftSwipe && currentMobileIdx < menuItems.length - 1) {
+      // Swipe left - go to next item
+      scrollToItem(currentMobileIdx + 1);
+    }
+    if (isRightSwipe && currentMobileIdx > 0) {
+      // Swipe right - go to previous item
+      scrollToItem(currentMobileIdx - 1);
+    }
+  };
+
+  const scrollToItem = (index: number) => {
+    if (!scrollContainerRef.current) return;
+    
+    const container = scrollContainerRef.current;
+    const itemWidth = container.offsetWidth;
+    container.scrollTo({
+      left: index * itemWidth,
+      behavior: 'smooth'
+    });
+  };
+
   const visibleItems = menuItems.slice(startIdx, startIdx + CARDS_TO_SHOW);
 
   // Calculate progress for slider
-  const totalPossiblePositions = menuItems.length - CARDS_TO_SHOW + 1;
-  const currentPosition = startIdx + 1;
-  const progressPercentage = totalPossiblePositions > 1 ? (startIdx / (totalPossiblePositions - 1)) * 100 : 0;
+  const totalPossiblePositions = isMobile ? menuItems.length : menuItems.length - CARDS_TO_SHOW + 1;
+  const currentPosition = isMobile ? currentMobileIdx + 1 : startIdx + 1;
+  const progressPercentage = totalPossiblePositions > 1 ? 
+    (isMobile ? (currentMobileIdx / (totalPossiblePositions - 1)) * 100 : (startIdx / (totalPossiblePositions - 1)) * 100) : 0;
 
   return (
     <section className="py-24 lg:py-32 bg-neutral-50 text-neutral-900">
@@ -97,75 +161,131 @@ function OurMenu() {
           <div className="w-24 h-[1px] bg-neutral-300" />
         </div>
 
-        <div className="flex items-center justify-center w-full gap-6 lg:gap-8">
-          {/* Navigation arrows - more visible */}
-          <Button
-            variant="ghost"
-            className={`flex bg-neutral-100 hover:bg-neutral-200 border border-neutral-300 text-neutral-700 hover:text-neutral-900 shadow-sm disabled:opacity-30 disabled:cursor-not-allowed p-3 rounded-full transition-all duration-200 ${
-              canGoBack ? 'hover:shadow-md' : ''
-            }`}
-            onClick={() => setStartIdx((idx) => Math.max(0, idx - 1))}
-            aria-label="Previous"
-            disabled={!canGoBack}
-            size="icon"
-          >
-            <span className="font-serif text-lg">←</span>
-          </Button>
-
-          <div className="flex gap-8 lg:gap-12 w-full justify-center overflow-x-visible">
-            {visibleItems.map((item) => (
-              <div
-                key={item.id}
-                className="w-[85vw] max-w-sm min-w-0 flex-shrink-0 flex flex-col items-start group"
-              >
-                <div className="w-full relative mb-6">
-                  {/* Subtle tag */}
-                  {item.tag && (
-                    <span className="absolute top-4 left-4 bg-white/90 text-neutral-700 text-xs font-serif px-4 py-2 border border-neutral-200/50 backdrop-blur-sm" style={{ borderWidth: '0.5px' }}>
-                      {item.tag}
-                    </span>
-                  )}
-                  {item.mediaType === 'image' ? (
-                    <img
-                      src={item.src}
-                      alt={item.title}
-                      className="w-full aspect-[3/4] object-cover transition-all duration-500 group-hover:opacity-90"
-                      loading="lazy"
-                    />
-                  ) : (
-                    <video
-                      src={item.src}
-                      className="w-full aspect-[3/4] object-cover transition-all duration-500 group-hover:opacity-90"
-                      controls
-                      preload="none"
-                    />
-                  )}
+        {/* Mobile Slider */}
+        {isMobile ? (
+          <div className="w-full">
+            <div
+              ref={scrollContainerRef}
+              className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide"
+              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+            >
+              {menuItems.map((item) => (
+                <div
+                  key={item.id}
+                  className="w-full flex-shrink-0 snap-center px-3"
+                >
+                  <div className="flex flex-col items-start group">
+                    <div className="w-full relative mb-6">
+                      {/* Subtle tag */}
+                      {item.tag && (
+                        <span className="absolute top-4 left-4 bg-white/90 text-neutral-700 text-xs font-serif px-4 py-2 border border-neutral-200/50 backdrop-blur-sm" style={{ borderWidth: '0.5px' }}>
+                          {item.tag}
+                        </span>
+                      )}
+                      {item.mediaType === 'image' ? (
+                        <img
+                          src={item.src}
+                          alt={item.title}
+                          className="w-full aspect-[3/4] object-cover transition-all duration-500 group-hover:opacity-90"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <video
+                          src={item.src}
+                          className="w-full aspect-[3/4] object-cover transition-all duration-500 group-hover:opacity-90"
+                          controls
+                          preload="none"
+                        />
+                      )}
+                    </div>
+                    <div className="w-full space-y-4">
+                      <h3 className="font-serif text-xl font-normal text-left text-neutral-900 leading-tight">
+                        {item.title}
+                      </h3>
+                      <p className="font-serif text-base text-neutral-600 text-left leading-relaxed">
+                        {item.description}
+                      </p>
+                    </div>
+                  </div>
                 </div>
-                <div className="w-full space-y-4">
-                  <h3 className="font-serif text-xl lg:text-2xl font-normal text-left text-neutral-900 leading-tight">
-                    {item.title}
-                  </h3>
-                  <p className="font-serif text-base lg:text-lg text-neutral-600 text-left leading-relaxed">
-                    {item.description}
-                  </p>
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
+        ) : (
+          /* Desktop/Tablet Navigation */
+          <div className="flex items-center justify-center w-full gap-6 lg:gap-8">
+            {/* Navigation arrows - more visible */}
+            <Button
+              variant="ghost"
+              className={`flex bg-neutral-100 hover:bg-neutral-200 border border-neutral-300 text-neutral-700 hover:text-neutral-900 shadow-sm disabled:opacity-30 disabled:cursor-not-allowed p-3 rounded-full transition-all duration-200 ${
+                canGoBack ? 'hover:shadow-md' : ''
+              }`}
+              onClick={() => setStartIdx((idx) => Math.max(0, idx - 1))}
+              aria-label="Previous"
+              disabled={!canGoBack}
+              size="icon"
+            >
+              <span className="font-serif text-lg">←</span>
+            </Button>
 
-          <Button
-            variant="ghost"
-            className={`flex bg-neutral-100 hover:bg-neutral-200 border border-neutral-300 text-neutral-700 hover:text-neutral-900 shadow-sm disabled:opacity-30 disabled:cursor-not-allowed p-3 rounded-full transition-all duration-200 ${
-              canGoForward ? 'hover:shadow-md' : ''
-            }`}
-            onClick={() => setStartIdx((idx) => Math.min(menuItems.length - CARDS_TO_SHOW, idx + 1))}
-            aria-label="Next"
-            disabled={!canGoForward}
-            size="icon"
-          >
-            <span className="font-serif text-lg">→</span>
-          </Button>
-        </div>
+            <div className="flex gap-8 lg:gap-12 w-full justify-center overflow-x-visible">
+              {visibleItems.map((item) => (
+                <div
+                  key={item.id}
+                  className="w-[85vw] max-w-sm min-w-0 flex-shrink-0 flex flex-col items-start group"
+                >
+                  <div className="w-full relative mb-6">
+                    {/* Subtle tag */}
+                    {item.tag && (
+                      <span className="absolute top-4 left-4 bg-white/90 text-neutral-700 text-xs font-serif px-4 py-2 border border-neutral-200/50 backdrop-blur-sm" style={{ borderWidth: '0.5px' }}>
+                        {item.tag}
+                      </span>
+                    )}
+                    {item.mediaType === 'image' ? (
+                      <img
+                        src={item.src}
+                        alt={item.title}
+                        className="w-full aspect-[3/4] object-cover transition-all duration-500 group-hover:opacity-90"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <video
+                        src={item.src}
+                        className="w-full aspect-[3/4] object-cover transition-all duration-500 group-hover:opacity-90"
+                        controls
+                        preload="none"
+                      />
+                    )}
+                  </div>
+                  <div className="w-full space-y-4">
+                    <h3 className="font-serif text-xl lg:text-2xl font-normal text-left text-neutral-900 leading-tight">
+                      {item.title}
+                    </h3>
+                    <p className="font-serif text-base lg:text-lg text-neutral-600 text-left leading-relaxed">
+                      {item.description}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <Button
+              variant="ghost"
+              className={`flex bg-neutral-100 hover:bg-neutral-200 border border-neutral-300 text-neutral-700 hover:text-neutral-900 shadow-sm disabled:opacity-30 disabled:cursor-not-allowed p-3 rounded-full transition-all duration-200 ${
+                canGoForward ? 'hover:shadow-md' : ''
+              }`}
+              onClick={() => setStartIdx((idx) => Math.min(menuItems.length - CARDS_TO_SHOW, idx + 1))}
+              aria-label="Next"
+              disabled={!canGoForward}
+              size="icon"
+            >
+              <span className="font-serif text-lg">→</span>
+            </Button>
+          </div>
+        )}
 
         {/* Progress Slider */}
         <div className="mt-12 flex justify-center">
